@@ -27,91 +27,132 @@ st.set_page_config(
 )
 
 # =========================================================
-# CUSTOM CSS — MIRIP MOCKUP
+# CUSTOM CSS (SUDAH DIPERBAIKI AGAR LEBIH RAPI)
 # =========================================================
 st.markdown("""
 <style>
-/* ---------- Background utama ---------- */
-.stApp { background-color: #ffffff; }
-
-/* ---------- Sidebar ---------- */
-section[data-testid="stSidebar"] { background-color: #f7f8fc; border-right: 1px solid #e8eaf0; }
-section[data-testid="stSidebar"] > div { padding-top: 1.5rem; }
-
-/* ---------- Judul sidebar "Pengaturan" ---------- */
-.sidebar-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 22px; padding-bottom: 12px; border-bottom: 1px solid #e0e2e8; }
-
-/* ---------- Label sidebar ---------- */
-.sidebar-label { font-size: 14px; font-weight: 700; color: #1a1a1a; margin: 14px 0 5px 0; }
-
-/* ---------- Input widgets di sidebar ---------- */
-section[data-testid="stSidebar"] .stTextInput input,
-section[data-testid="stSidebar"] .stNumberInput input,
-section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] > div {
-    background-color: #ffffff !important; border: 1px solid #d9dce3 !important;
-    border-radius: 5px !important; font-size: 14px !important; color: #333 !important; min-height: 40px !important;
+/* Menghilangkan padding berlebih di atas halaman */
+.block-container { 
+    padding-top: 2rem !important; 
+    padding-bottom: 2rem !important; 
 }
 
-/* ---------- File uploader ---------- */
-section[data-testid="stSidebar"] section[data-testid="stFileUploadDropzone"] {
-    background-color: #ffffff; border: 1px solid #d9dce3; border-radius: 5px; padding: 5px 10px; min-height: 40px;
+/* ---------- Tampilan Sidebar ---------- */
+section[data-testid="stSidebar"] { 
+    background-color: #f8f9fa; 
+    border-right: 1px solid #e0e0e0; 
 }
-section[data-testid="stSidebar"] section[data-testid="stFileUploadDropzone"] > div { padding: 0 !important; }
-section[data-testid="stSidebar"] section[data-testid="stFileUploadDropzone"] span,
-section[data-testid="stSidebar"] section[data-testid="stFileUploadDropzone"] small { font-size: 13px !important; color: #555 !important; }
-section[data-testid="stSidebar"] section[data-testid="stFileUploadDropzone"] button {
-    background-color: #eef1f6 !important; color: #333 !important; border: 1px solid #d9dce3 !important; padding: 4px 12px !important; font-size: 12px !important;
+.sidebar-title { 
+    font-size: 22px; font-weight: 800; color: #1a1a1a; 
+    margin-bottom: 20px; padding-bottom: 10px; 
+    border-bottom: 1px solid #d1d5db; 
+}
+.sidebar-label { 
+    font-size: 14px; font-weight: 700; color: #333; 
+    margin: 15px 0 5px 0; 
 }
 
-/* ---------- Tombol (Mulai Training / Mulai Clustering) ---------- */
+/* ---------- Tombol Biru ---------- */
 .stButton > button {
-    background-color: #3b78d8 !important; color: white !important; border: none !important;
-    border-radius: 6px !important; padding: 12px 18px !important; font-weight: 700 !important;
-    font-size: 15px !important; width: 100% !important; margin-top: 20px !important;
-    box-shadow: 0 1px 3px rgba(59,120,216,0.3) !important;
+    background-color: #2563eb !important; 
+    color: white !important; 
+    border: none !important;
+    border-radius: 8px !important; 
+    padding: 10px 20px !important; 
+    font-weight: 600 !important;
+    font-size: 15px !important; 
+    width: 100% !important; 
+    margin-top: 20px !important;
+    transition: all 0.2s;
 }
-.stButton > button:hover { background-color: #2c64bd !important; color: white !important; }
+.stButton > button:hover { 
+    background-color: #1d4ed8 !important; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
 
-/* ---------- Judul halaman utama ---------- */
-.app-title { font-size: 24px; font-weight: 700; color: #1a1a1a; margin: 0; padding: 0; }
+/* ---------- Judul Utama ---------- */
+.app-title { 
+    font-size: 26px; font-weight: 800; color: #1a1a1a; 
+    margin: 0; padding: 0;
+}
 
-/* ---------- Toggle mode (kanan atas) ---------- */
+/* ---------- Toggle Mode (Kanan Atas) ---------- */
+/* Container radio */
 div[role="radiogroup"] {
-    display: flex !important; flex-direction: row !important; justify-content: flex-end !important;
-    gap: 0 !important; flex-wrap: nowrap !important; background-color: #f1f3f8; border-radius: 8px; padding: 4px;
+    display: inline-flex !important; 
+    flex-direction: row !important; 
+    background-color: #f1f3f5;
+    border-radius: 10px;
+    padding: 4px;
+    float: right;
 }
+/* Label tombol */
 div[role="radiogroup"] > label {
-    background-color: transparent !important; padding: 7px 16px !important; border-radius: 6px !important;
-    cursor: pointer !important; border: none !important; margin: 0 !important; transition: all 0.15s ease;
+    background-color: transparent !important; 
+    padding: 8px 16px !important; 
+    border-radius: 8px !important;
+    cursor: pointer !important; 
+    border: none !important; 
+    margin: 0 !important;
+    white-space: nowrap; /* Mencegah teks turun ke bawah */
 }
-div[role="radiogroup"] > label p { font-size: 13.5px !important; font-weight: 500 !important; color: #8a8f99 !important; margin: 0 !important; }
-div[role="radiogroup"] > label:hover p { color: #4a90e2 !important; }
-div[role="radiogroup"] > label:has(input:checked) { background-color: #ffffff !important; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-div[role="radiogroup"] > label:has(input:checked) p { color: #3b78d8 !important; font-weight: 700 !important; }
-div[role="radiogroup"] > label > div:first-child, div[role="radiogroup"] > label > span:first-child { display: none !important; }
+/* Teks di dalam tombol */
+div[role="radiogroup"] > label p { 
+    font-size: 14px !important; 
+    font-weight: 600 !important; 
+    color: #6b7280 !important; 
+    margin: 0 !important; 
+}
+/* Efek Hover */
+div[role="radiogroup"] > label:hover p { 
+    color: #2563eb !important; 
+}
+/* Tombol yang aktif */
+div[role="radiogroup"] > label:has(input:checked) { 
+    background-color: #ffffff !important; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+}
+div[role="radiogroup"] > label:has(input:checked) p { 
+    color: #2563eb !important; 
+}
+/* Sembunyikan lingkaran radio bawaan */
+div[role="radiogroup"] > label > div:first-child, 
+div[role="radiogroup"] > label > span:first-child { 
+    display: none !important; 
+}
 
 /* ---------- Section Titles ---------- */
-.section-title { font-size: 19px; font-weight: 700; margin: 24px 0 12px 0; color: #1a1a1a; }
+.section-title { 
+    font-size: 20px; font-weight: 700; color: #1f2937; 
+    margin: 25px 0 15px 0; 
+}
 
 /* ---------- Metric Box ---------- */
-.metric-box { background: #ffffff; border: 1px solid #e2e5ec; border-radius: 7px; padding: 14px 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); height: 100%; }
-.metric-label { font-size: 14px; color: #1a1a1a; margin: 0 0 8px 0; font-weight: 700; }
-.metric-value { font-size: 26px; font-weight: 700; color: #2e7d32; margin: 0; line-height: 1.1; }
+.metric-box { 
+    background: #ffffff; border: 1px solid #e5e7eb; 
+    border-radius: 10px; padding: 20px; 
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
+}
+.metric-label { 
+    font-size: 14px; color: #4b5563; 
+    margin: 0 0 8px 0; font-weight: 600; 
+}
+.metric-value { 
+    font-size: 28px; font-weight: 800; color: #15803d; 
+    margin: 0; line-height: 1; 
+}
 
-/* ---------- Caption bawah ---------- */
-.caption-text { font-size: 12px; color: #999; margin-top: 8px; font-style: normal; }
-
-/* ---------- Tabel dataframe ---------- */
-.stDataFrame { border: 1px solid #e2e5ec; border-radius: 5px; }
-
-/* ---------- Hilangkan padding kosong atas ---------- */
-.block-container { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+/* ---------- Caption ---------- */
+.caption-text { 
+    font-size: 13px; color: #9ca3af; 
+    margin-top: 10px; font-style: italic; 
+}
 </style>
 """, unsafe_allow_html=True)
 
 
 # =========================================================
-# HELPER
+# HELPER FUNCTIONS
 # =========================================================
 def metric_box(label, value):
     st.markdown(f'<div class="metric-box"><p class="metric-label">{label}</p><p class="metric-value">{value}</p></div>', unsafe_allow_html=True)
@@ -120,14 +161,17 @@ def sidebar_label(text):
     st.markdown(f'<div class="sidebar-label">{text}</div>', unsafe_allow_html=True)
 
 # =========================================================
-# HEADER
+# HEADER (Judul Kiri, Toggle Kanan)
 # =========================================================
-head_l, head_r = st.columns([1.6, 1])
+head_l, head_r = st.columns([1.5, 1], vertical_alignment="center")
+
 with head_l:
     st.markdown('<p class="app-title">Machine Learning Experiment</p>', unsafe_allow_html=True)
 with head_r:
     mode = st.radio("mode", ["Supervised Learning", "Unsupervised Learning"], horizontal=True, label_visibility="collapsed")
-st.markdown("<hr style='margin: 12px 0 18px 0; border: none; border-top: 1px solid #e8eaf0;'>", unsafe_allow_html=True)
+
+# Garis pemisah
+st.markdown("<hr style='margin: 15px 0 25px 0; border: none; border-top: 1px solid #e5e7eb;'>", unsafe_allow_html=True)
 
 
 # =========================================================
@@ -138,7 +182,7 @@ if mode == "Supervised Learning":
         st.markdown('<div class="sidebar-title">Pengaturan</div>', unsafe_allow_html=True)
         target_col, test_size_pct, algo, param_val, use_smote, tombol_train, df_sup = None, 20, "Random Forest", 5, False, False, None
 
-        sidebar_label("Dataset")
+        sidebar_label("Dataset (CSV/Excel)")
         sup_file = st.file_uploader("Dataset", type=["csv", "xlsx"], key="sup_file", label_visibility="collapsed")
 
         if sup_file is not None:
@@ -147,7 +191,7 @@ if mode == "Supervised Learning":
             sidebar_label("Target column")
             target_col = st.selectbox("Target column", options=df_sup.columns, index=len(df_sup.columns) - 1, label_visibility="collapsed")
             
-            sidebar_label("Test size")
+            sidebar_label("Test size (%)")
             test_size_pct = st.number_input("Test size", min_value=5, max_value=50, value=20, step=5, label_visibility="collapsed")
             
             sidebar_label("Algorithm")
@@ -160,27 +204,28 @@ if mode == "Supervised Learning":
                 sidebar_label("C (Regularization)")
                 param_val = st.number_input("C (Regularization)", min_value=0.1, max_value=100.0, value=1.0, step=0.1, label_visibility="collapsed")
             
-            sidebar_label("SMOTE (Opsional)")
-            use_smote = st.checkbox("Gunakan SMOTE", value=False, label_visibility="collapsed", help="Menyeimbangkan kelas minoritas")
+            sidebar_label("Imbalanced Data")
+            use_smote = st.checkbox("Gunakan SMOTE", value=False, label_visibility="collapsed", help="Menyeimbangkan kelas minoritas (fraud)")
             
             tombol_train = st.button("Mulai Training", use_container_width=True)
 
+    # ----- MAIN CONTENT SUPERVISED -----
     if sup_file is None:
         st.markdown('<div class="section-title">Cuplikan Dataset</div>', unsafe_allow_html=True)
         st.info("📂 Silakan upload dataset (CSV/Excel) pada sidebar **Pengaturan** untuk memulai.")
+        
         st.markdown("""
         ### 📊 Rekomendasi Dataset
         **Credit Card Fraud Detection** — [Download di Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
         - Kolom target: `Class` (0 = sah, 1 = fraud)
-        - Centang **SMOTE** untuk menyeimbangkan data
+        - Centang **SMOTE** untuk menyeimbangkan data karena fraud sangat sedikit.
         """)
     else:
-        # 1. Cuplikan Dataset (Sesuai Mockup)
         st.markdown('<div class="section-title">Cuplikan Dataset</div>', unsafe_allow_html=True)
         st.dataframe(df_sup.head(6), use_container_width=True, hide_index=True)
 
-        # Fitur Analisis Tambahan (EDA) ditaruh di Expander agar tidak merusak tampilan awal
-        with st.expander("📊 Lihat Analisis Data (EDA)"):
+        # Fitur Analisis Tambahan (EDA)
+        with st.expander("📊 Lihat Analisis Data Awal (EDA)"):
             col_eda1, col_eda2 = st.columns(2)
             with col_eda1:
                 st.write("**Distribusi Kelas Target**")
@@ -199,7 +244,6 @@ if mode == "Supervised Learning":
                 sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f", ax=ax_corr, cbar=False)
                 st.pyplot(fig_corr)
 
-        # 2. Hasil Training
         if tombol_train:
             try:
                 with st.spinner("Melatih model..."):
@@ -228,7 +272,7 @@ if mode == "Supervised Learning":
                     y_pred = model.predict(X_test_s)
                     y_prob = model.predict_proba(X_test_s)[:, 1] if hasattr(model, "predict_proba") else y_pred
 
-                # 3. Hasil Evaluasi (Sesuai Mockup)
+                # Hasil Evaluasi
                 st.markdown('<div class="section-title">Hasil Evaluasi</div>', unsafe_allow_html=True)
                 avg = "weighted" if len(np.unique(y)) > 2 else "binary"
                 
@@ -238,20 +282,20 @@ if mode == "Supervised Learning":
                 with c3: metric_box("Recall", f"{recall_score(y_test, y_pred, average=avg, zero_division=0):.2f}")
                 with c4: metric_box("F1-Measure", f"{f1_score(y_test, y_pred, average=avg, zero_division=0):.2f}")
 
-                # 4. Confusion Matrix (Sesuai Mockup)
+                # Confusion Matrix
                 st.markdown('<div class="section-title">Confusion Matrix</div>', unsafe_allow_html=True)
                 cm = confusion_matrix(y_test, y_pred)
                 fig_cm, ax_cm = plt.subplots(figsize=(4.5, 3.2))
-                sns.heatmap(cm, annot=True, fmt="d", cmap="Greys", cbar=False, ax=ax_cm, annot_kws={"size": 13, "weight": "bold"}, linewidths=0.5, linecolor="#ffffff")
+                sns.heatmap(cm, annot=True, fmt="d", cmap="Greys", cbar=False, ax=ax_cm, annot_kws={"size": 14, "weight": "bold"}, linewidths=0.5, linecolor="#ffffff")
                 ax_cm.set_xlabel("")
                 ax_cm.set_ylabel("")
-                ax_cm.tick_params(labelsize=9)
+                ax_cm.tick_params(labelsize=10)
                 plt.tight_layout()
                 st.pyplot(fig_cm, use_container_width=False)
                 st.markdown('<div class="caption-text">Visualisasi hasil prediksi model</div>', unsafe_allow_html=True)
 
-                # 5. Fitur Analisis Tambahan (ROC & Feature Importance) di Expander
-                with st.expander("📈 Lihat Analisis Model Lanjutan (ROC Curve & Feature Importance)"):
+                # Analisis Lanjutan (ROC & Feature Importance)
+                with st.expander("📈 Lihat Analisis Model Lanjutan (ROC & Feature Importance)"):
                     col_analisis1, col_analisis2 = st.columns(2)
                     
                     with col_analisis1:
@@ -266,8 +310,6 @@ if mode == "Supervised Learning":
                             ax_roc.set_ylabel("True Positive Rate")
                             ax_roc.legend(loc="lower right")
                             st.pyplot(fig_roc)
-                        else:
-                            st.info("ROC Curve hanya untuk klasifikasi biner.")
                             
                     with col_analisis2:
                         if algo == "Random Forest":
@@ -277,11 +319,10 @@ if mode == "Supervised Learning":
                             fig_imp, ax_imp = plt.subplots(figsize=(6, 3.5))
                             sns.barplot(data=feat_imp, x="Importance", y="Feature", palette="viridis", ax=ax_imp)
                             st.pyplot(fig_imp)
-                        else:
-                            st.info("Feature Importance hanya tersedia untuk Random Forest.")
 
             except Exception as e:
                 st.error(f"❌ Terjadi kesalahan: {e}")
+
 
 # =========================================================
 # ============== UNSUPERVISED LEARNING ===================
@@ -291,7 +332,7 @@ else:
         st.markdown('<div class="sidebar-title">Pengaturan</div>', unsafe_allow_html=True)
         feature_cols, algo_u, n_clusters, eps_val, min_samples_val, tombol_cluster, df_unsup = None, "K-Means", 3, 0.5, 5, False, None
         
-        sidebar_label("Dataset")
+        sidebar_label("Dataset (CSV/Excel)")
         unsup_file = st.file_uploader("Dataset", type=["csv", "xlsx"], key="unsup_file", label_visibility="collapsed")
 
         if unsup_file is not None:
@@ -315,6 +356,7 @@ else:
                 
             tombol_cluster = st.button("Mulai Clustering", use_container_width=True)
 
+    # ----- MAIN CONTENT UNSUPERVISED -----
     if unsup_file is None:
         st.markdown('<div class="section-title">Cuplikan Dataset</div>', unsafe_allow_html=True)
         st.info("📂 Silakan upload dataset (CSV/Excel) pada sidebar **Pengaturan** untuk memulai.")
