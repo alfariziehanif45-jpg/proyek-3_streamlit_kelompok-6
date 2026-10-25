@@ -117,11 +117,9 @@ if mode == "Supervised Learning":
         st.markdown('<div class="section-title">Cuplikan Dataset</div>', unsafe_allow_html=True)
         st.info("📂 Silakan upload dataset (CSV/Excel) pada sidebar **Pengaturan** untuk memulai.")
     else:
-        # 1. Cuplikan Dataset
         st.markdown('<div class="section-title">Cuplikan Dataset</div>', unsafe_allow_html=True)
         st.dataframe(df_sup.head(6), use_container_width=True, hide_index=True)
 
-        # 2. EDA (Bisa dilihat sebelum training)
         with st.expander("📊 Lihat Analisis Data Awal (EDA)"):
             col_eda1, col_eda2 = st.columns(2)
             with col_eda1:
@@ -140,7 +138,6 @@ if mode == "Supervised Learning":
                 sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f", ax=ax_corr, cbar=False)
                 st.pyplot(fig_corr)
 
-        # 3. Hasil Training (Muncul setelah tombol diklik)
         if tombol_train:
             try:
                 with st.spinner("Melatih model... Mohon tunggu (untuk dataset besar ini bisa memakan waktu 1-2 menit)"):
@@ -214,7 +211,7 @@ if mode == "Supervised Learning":
                 st.error(f"❌ Terjadi kesalahan: {e}")
 
 # =========================================================
-# UNSUPERVISED LEARNING
+# UNSUPERVISED LEARNING (FIX DBSCAN)
 # =========================================================
 else:
     with st.sidebar:
@@ -238,9 +235,9 @@ else:
                 sidebar_label("Jumlah klaster (K)")
                 n_clusters = st.number_input("Jumlah klaster (K)", min_value=2, max_value=20, value=3, step=1, label_visibility="collapsed")
             else:
-                sidebar_label("eps")
+                sidebar_label("eps (Jarak Maksimal)")
                 eps_val = st.number_input("eps", min_value=0.1, max_value=10.0, value=0.5, step=0.1, label_visibility="collapsed")
-                sidebar_label("min_samples")
+                sidebar_label("min_samples (Minimal Tetangga)")
                 min_samples_val = st.number_input("min_samples", min_value=2, max_value=50, value=5, step=1, label_visibility="collapsed")
                 
             tombol_cluster = st.button("Mulai Clustering", use_container_width=True)
@@ -258,32 +255,67 @@ else:
             else:
                 try:
                     with st.spinner("Menjalankan clustering..."):
+                        # Siapkan data & hapus nilai NaN
                         X = df_unsup[feature_cols].dropna()
+                        
+                        # Peringatan jika dataset terlalu besar untuk DBSCAN
+                        if algo_u == "DBSCAN" and len(X) > 10000:
+                            st.warning(f"⚠️ Dataset sangat besar ({len(X):,} baris). DBSCAN bisa sangat lambat atau kehabisan memori. Disarankan menggunakan K-Means atau sampel data.")
+                        
                         X_s = StandardScaler().fit_transform(X)
 
+                        # --- Proses Model ---
                         if algo_u == "K-Means":
                             labels = KMeans(n_clusters=n_clusters, random_state=42, n_init=10).fit_predict(X_s)
+                            n_noise = 0
                         else:
                             labels = DBSCAN(eps=eps_val, min_samples=min_samples_val).fit_predict(X_s)
+                            n_noise = list(labels).count(-1)
 
-                        n_unique = len(set(labels)) - (1 if -1 in labels else 0)
-                        sil = silhouette_score(X_s, labels) if n_unique > 1 else None
+                        # --- Hitung Metrik (Aman dari Error) ---
+                        unique_clusters = set(labels) - {-1} # Abaikan noise (-1) untuk hitung klaster asli
+                        n_unique = len(unique_clusters)
+                        
+                        sil = None
+                        if n_unique > 1:
+                            # Hanya hitung Silhouette jika ada >1 klaster dan abaikan noise
+                            mask_cluster = labels != -1
+                            sil = silhouette_score(X_s[mask_cluster], labels[mask_cluster])
 
+                    # --- Tampilkan Hasil ---
                     col_a, col_b = st.columns([1, 2.2])
                     with col_a:
                         st.markdown('<div class="section-title">Hasil Clustering</div>', unsafe_allow_html=True)
                         metric_box("Silhouette Score", f"{sil:.2f}" if sil is not None else "N/A")
+                        
+                        st.write(f"**Jumlah Klaster:** {n_unique}")
+                        if algo_u == "DBSCAN":
+                            st.write(f"**Noise (Outlier):** {n_noise} titik")
+
                     with col_b:
                         st.markdown('<div class="section-title">Scatter Plot</div>', unsafe_allow_html=True)
                         fig, ax = plt.subplots(figsize=(6.5, 4.2))
-                        ax.scatter(X_s[:, 0], X_s[:, 1], c="#3b78d8", s=55, alpha=1.0, edgecolor="white", linewidth=0.8, zorder=2)
-                        if len(X_s) >= 5:
-                            highlight_idx = np.linspace(0, len(X_s) - 1, 4).astype(int)
-                            ax.scatter(X_s[highlight_idx, 0], X_s[highlight_idx, 1], facecolors="none", edgecolors="#e8a33d", s=90, linewidth=1.8, zorder=3)
-                        ax.set_xlabel("fitur 1", fontsize=10, color="#666")
-                        ax.set_ylabel("fitur 2", fontsize=10, color="#666")
+                        
+                        # Plot Noise (Warna Merah / Silang)
+                        if n_noise > 0:
+                            mask_noise = labels == -1
+                            ax.scatter(X_s[mask_noise, 0], X_s[mask_noise, 1], c="red", marker="x", s=40, label="Noise")
+                            
+                        # Plot Klaster (Warna-warni)
+                        if n_unique > 0:
+                            mask_cluster = labels != -1
+                            scatter = ax.scatter(X_s[mask_cluster, 0], X_s[mask_cluster, 1], c=labels[mask_cluster], cmap="viridis", s=50, alpha=0.8, edgecolor="white", linewidth=0.5)
+                            plt.colorbar(scatter, ax=ax, label="Label Klaster")
+
+                        ax.set_xlabel(feature_cols[0], fontsize=10, color="#666")
+                        ax.set_ylabel(feature_cols[1], fontsize=10, color="#666")
                         ax.set_xticks([]); ax.set_yticks([])
                         for spine in ax.spines.values(): spine.set_color("#c8ccd4")
+                        
+                        if n_noise > 0:
+                            ax.legend(loc="upper right")
+                            
                         st.pyplot(fig, use_container_width=True)
+
                 except Exception as e:
                     st.error(f"❌ Terjadi kesalahan: {e}")
