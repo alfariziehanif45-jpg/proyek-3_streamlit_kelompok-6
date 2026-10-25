@@ -27,155 +27,41 @@ st.set_page_config(
 )
 
 # =========================================================
-# CUSTOM CSS (Sangat Rapi Sesuai Mockup)
+# CUSTOM CSS
 # =========================================================
 st.markdown("""
 <style>
-/* ---------- Background Utama ---------- */
 .stApp { background-color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
-/* ---------- Sidebar ---------- */
-section[data-testid="stSidebar"] { 
-    background-color: #f7f8fc; 
-    border-right: 1px solid #e0e2e8; 
-}
-section[data-testid="stSidebar"] > div:first-child {
-    padding-top: 2rem;
-}
-
-/* ---------- Label Sidebar ---------- */
-.sidebar-label { 
-    font-size: 13.5px; font-weight: 700; color: #1a1a1a; 
-    margin: 18px 0 6px 0; 
-}
-.sidebar-title { 
-    font-size: 22px; font-weight: 800; color: #1a1a1a; 
-    margin-bottom: 25px; padding-bottom: 15px; 
-    border-bottom: 1px solid #e0e0e0;
-}
-
-/* ---------- Input Form Sidebar ---------- */
+section[data-testid="stSidebar"] { background-color: #f7f8fc; border-right: 1px solid #e0e2e8; }
+section[data-testid="stSidebar"] > div:first-child { padding-top: 2rem; }
+.sidebar-label { font-size: 13.5px; font-weight: 700; color: #1a1a1a; margin: 18px 0 6px 0; }
+.sidebar-title { font-size: 22px; font-weight: 800; color: #1a1a1a; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #e0e0e0; }
 section[data-testid="stSidebar"] .stTextInput input,
 section[data-testid="stSidebar"] .stNumberInput input,
 section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] > div {
-    background-color: #ffffff !important; 
-    border: 1px solid #d1d5db !important;
-    border-radius: 4px !important; 
-    font-size: 14px !important; 
-    color: #333 !important; 
-    min-height: 38px !important;
-    box-shadow: none !important;
+    background-color: #ffffff !important; border: 1px solid #d1d5db !important; border-radius: 4px !important; font-size: 14px !important; color: #333 !important; min-height: 38px !important; box-shadow: none !important;
 }
 section[data-testid="stSidebar"] .stFileUploader section[data-testid="stFileUploadDropzone"] {
-    background-color: #ffffff !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 4px !important;
-    padding: 10px !important;
+    background-color: #ffffff !important; border: 1px solid #d1d5db !important; border-radius: 4px !important; padding: 10px !important;
 }
-
-/* ---------- Tombol Biru ---------- */
-.stButton > button {
-    background-color: #3b78d8 !important; 
-    color: white !important; 
-    border: none !important;
-    border-radius: 6px !important; 
-    padding: 12px 20px !important; 
-    font-weight: 700 !important;
-    font-size: 15px !important; 
-    width: 100% !important; 
-    margin-top: 25px !important;
-}
-.stButton > button:hover { 
-    background-color: #2c64bd !important; 
-}
-
-/* ---------- Judul Utama ---------- */
-.app-title { 
-    font-size: 24px; font-weight: 800; color: #1a1a1a; 
-    margin: 0; padding: 0;
-}
-
-/* ---------- Toggle Mode (Kanan Atas) ---------- */
-div[role="radiogroup"] {
-    display: flex !important; 
-    flex-direction: row !important; 
-    justify-content: flex-end !important;
-    gap: 8px !important;
-    flex-wrap: nowrap !important;
-}
-div[role="radiogroup"] > label {
-    background-color: #ffffff !important; 
-    padding: 8px 20px !important; 
-    border-radius: 6px !important;
-    cursor: pointer !important; 
-    border: 1px solid #d1d5db !important; 
-    margin: 0 !important;
-    transition: all 0.2s;
-}
-div[role="radiogroup"] > label p { 
-    font-size: 14px !important; 
-    font-weight: 600 !important; 
-    color: #4b5563 !important; 
-    margin: 0 !important; 
-}
-/* Efek saat aktif */
-div[role="radiogroup"] > label:has(input:checked) { 
-    background-color: #e0edff !important; 
-    border-color: #93c5fd !important;
-}
-div[role="radiogroup"] > label:has(input:checked) p { 
-    color: #2563eb !important; 
-    font-weight: 700 !important; 
-}
-/* Sembunyikan radio button bawaan */
-div[role="radiogroup"] > label > div:first-child, 
-div[role="radiogroup"] > label > span:first-child { 
-    display: none !important; 
-}
-
-/* ---------- Section Titles ---------- */
-.section-title { 
-    font-size: 18px; font-weight: 700; color: #1f2937; 
-    margin: 25px 0 15px 0; 
-}
-
-/* ---------- Metric Box (Hasil Evaluasi) ---------- */
-.metric-box { 
-    background: #ffffff; 
-    border: 1px solid #e5e7eb; 
-    border-radius: 8px; 
-    padding: 16px 20px; 
-    box-shadow: 0 1px 2px rgba(0,0,0,0.02); 
-    height: 100%;
-}
-.metric-label { 
-    font-size: 13px; color: #4b5563; 
-    margin: 0 0 10px 0; font-weight: 600; 
-}
-.metric-value { 
-    font-size: 26px; font-weight: 800; color: #2e7d32; 
-    margin: 0; line-height: 1; 
-}
-
-/* ---------- Caption ---------- */
-.caption-text { 
-    font-size: 12px; color: #9ca3af; 
-    margin-top: 12px; font-style: italic; 
-}
-
-/* ---------- Menghilangkan Garis Bawah Tabel & Padding Lebar ---------- */
-.block-container { 
-    padding-top: 2rem !important; 
-    padding-bottom: 2rem !important; 
-    max-width: 95% !important;
-}
+.stButton > button { background-color: #3b78d8 !important; color: white !important; border: none !important; border-radius: 6px !important; padding: 12px 20px !important; font-weight: 700 !important; font-size: 15px !important; width: 100% !important; margin-top: 25px !important; }
+.stButton > button:hover { background-color: #2c64bd !important; }
+.app-title { font-size: 24px; font-weight: 800; color: #1a1a1a; margin: 0; padding: 0; }
+div[role="radiogroup"] { display: flex !important; flex-direction: row !important; justify-content: flex-end !important; gap: 8px !important; flex-wrap: nowrap !important; }
+div[role="radiogroup"] > label { background-color: #ffffff !important; padding: 8px 20px !important; border-radius: 6px !important; cursor: pointer !important; border: 1px solid #d1d5db !important; margin: 0 !important; transition: all 0.2s; }
+div[role="radiogroup"] > label p { font-size: 14px !important; font-weight: 600 !important; color: #4b5563 !important; margin: 0 !important; }
+div[role="radiogroup"] > label:has(input:checked) { background-color: #e0edff !important; border-color: #93c5fd !important; }
+div[role="radiogroup"] > label:has(input:checked) p { color: #2563eb !important; font-weight: 700 !important; }
+div[role="radiogroup"] > label > div:first-child, div[role="radiogroup"] > label > span:first-child { display: none !important; }
+.section-title { font-size: 18px; font-weight: 700; color: #1f2937; margin: 25px 0 15px 0; }
+.metric-box { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); height: 100%; }
+.metric-label { font-size: 13px; color: #4b5563; margin: 0 0 10px 0; font-weight: 600; }
+.metric-value { font-size: 26px; font-weight: 800; color: #2e7d32; margin: 0; line-height: 1; }
+.caption-text { font-size: 12px; color: #9ca3af; margin-top: 12px; font-style: italic; }
+.block-container { padding-top: 2rem !important; padding-bottom: 2rem !important; max-width: 95% !important; }
 </style>
 """, unsafe_allow_html=True)
 
-
-# =========================================================
-# HELPER FUNCTIONS
-# =========================================================
 def metric_box(label, value):
     st.markdown(f'<div class="metric-box"><p class="metric-label">{label}</p><p class="metric-value">{value}</p></div>', unsafe_allow_html=True)
 
@@ -183,22 +69,17 @@ def sidebar_label(text):
     st.markdown(f'<div class="sidebar-label">{text}</div>', unsafe_allow_html=True)
 
 # =========================================================
-# HEADER (Judul Kiri, Toggle Kanan)
+# HEADER
 # =========================================================
-# Menggunakan columns dan vertical_alignment agar sejajar
 head_l, head_r = st.columns([1.5, 1], vertical_alignment="center")
-
 with head_l:
     st.markdown('<p class="app-title">Machine Learning Experiment</p>', unsafe_allow_html=True)
 with head_r:
     mode = st.radio("mode", ["Supervised Learning", "Unsupervised Learning"], horizontal=True, label_visibility="collapsed")
-
-# Garis pemisah di bawah header
 st.markdown("<hr style='margin: 10px 0 25px 0; border: none; border-top: 1px solid #e5e7eb;'>", unsafe_allow_html=True)
 
-
 # =========================================================
-# ============== SUPERVISED LEARNING =====================
+# SUPERVISED LEARNING
 # =========================================================
 if mode == "Supervised Learning":
     with st.sidebar:
@@ -232,7 +113,6 @@ if mode == "Supervised Learning":
             
             tombol_train = st.button("Mulai Training", use_container_width=True)
 
-    # ----- MAIN CONTENT SUPERVISED -----
     if sup_file is None:
         st.markdown('<div class="section-title">Cuplikan Dataset</div>', unsafe_allow_html=True)
         st.info("📂 Silakan upload dataset (CSV/Excel) pada sidebar **Pengaturan** untuk memulai.")
@@ -241,10 +121,29 @@ if mode == "Supervised Learning":
         st.markdown('<div class="section-title">Cuplikan Dataset</div>', unsafe_allow_html=True)
         st.dataframe(df_sup.head(6), use_container_width=True, hide_index=True)
 
-        # 2. Hasil Training
+        # 2. EDA (Bisa dilihat sebelum training)
+        with st.expander("📊 Lihat Analisis Data Awal (EDA)"):
+            col_eda1, col_eda2 = st.columns(2)
+            with col_eda1:
+                st.write("**Distribusi Kelas Target**")
+                class_counts = df_sup[target_col].value_counts()
+                fig_dist, ax_dist = plt.subplots(figsize=(5, 3))
+                sns.barplot(x=class_counts.index.astype(str), y=class_counts.values, palette="Blues_r", ax=ax_dist)
+                st.pyplot(fig_dist)
+                if len(class_counts) == 2 and (class_counts.min() / class_counts.max()) < 0.1:
+                    st.warning("⚠️ Dataset sangat tidak seimbang. Disarankan mencentang **SMOTE**.")
+            with col_eda2:
+                st.write("**Correlation Matrix (dengan Target)**")
+                sample_df = df_sup.sample(n=min(1000, len(df_sup)), random_state=42)
+                corr = sample_df.corr(numeric_only=True)[[target_col]].sort_values(by=target_col, ascending=False)
+                fig_corr, ax_corr = plt.subplots(figsize=(4, 4))
+                sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f", ax=ax_corr, cbar=False)
+                st.pyplot(fig_corr)
+
+        # 3. Hasil Training (Muncul setelah tombol diklik)
         if tombol_train:
             try:
-                with st.spinner("Melatih model..."):
+                with st.spinner("Melatih model... Mohon tunggu (untuk dataset besar ini bisa memakan waktu 1-2 menit)"):
                     X = df_sup.drop(columns=[target_col])
                     y = df_sup[target_col]
                     if y.dtype == "object" or y.dtype.name == "category":
@@ -270,7 +169,6 @@ if mode == "Supervised Learning":
                     y_pred = model.predict(X_test_s)
                     y_prob = model.predict_proba(X_test_s)[:, 1] if hasattr(model, "predict_proba") else y_pred
 
-                # Hasil Evaluasi (Mockup Style)
                 st.markdown('<div class="section-title">Hasil Evaluasi</div>', unsafe_allow_html=True)
                 avg = "weighted" if len(np.unique(y)) > 2 else "binary"
                 
@@ -280,10 +178,9 @@ if mode == "Supervised Learning":
                 with c3: metric_box("Recall", f"{recall_score(y_test, y_pred, average=avg, zero_division=0):.2f}")
                 with c4: metric_box("F1-Measure", f"{f1_score(y_test, y_pred, average=avg, zero_division=0):.2f}")
 
-                # Confusion Matrix (Mockup Style)
                 st.markdown('<div class="section-title">Confusion Matrix</div>', unsafe_allow_html=True)
                 cm = confusion_matrix(y_test, y_pred)
-                fig_cm, ax_cm = plt.subplots(figsize=(3.5, 2.5)) # Ukuran pas seperti di gambar
+                fig_cm, ax_cm = plt.subplots(figsize=(3.5, 2.5))
                 sns.heatmap(cm, annot=True, fmt="d", cmap="Greys", cbar=False, ax=ax_cm, annot_kws={"size": 12, "weight": "bold"}, linewidths=0.5, linecolor="#ffffff")
                 ax_cm.set_xlabel("")
                 ax_cm.set_ylabel("")
@@ -292,7 +189,6 @@ if mode == "Supervised Learning":
                 st.pyplot(fig_cm, use_container_width=False)
                 st.markdown('<div class="caption-text">Visualisasi hasil prediksi model</div>', unsafe_allow_html=True)
 
-                # Analisis Lanjutan (Dimasukkan ke dalam Expander agar rapi)
                 with st.expander("📈 Lihat Analisis Model Lanjutan (ROC & Feature Importance)"):
                     col_analisis1, col_analisis2 = st.columns(2)
                     with col_analisis1:
@@ -318,7 +214,7 @@ if mode == "Supervised Learning":
                 st.error(f"❌ Terjadi kesalahan: {e}")
 
 # =========================================================
-# ============== UNSUPERVISED LEARNING ===================
+# UNSUPERVISED LEARNING
 # =========================================================
 else:
     with st.sidebar:
@@ -349,7 +245,6 @@ else:
                 
             tombol_cluster = st.button("Mulai Clustering", use_container_width=True)
 
-    # ----- MAIN CONTENT UNSUPERVISED -----
     if unsup_file is None:
         st.markdown('<div class="section-title">Cuplikan Dataset</div>', unsafe_allow_html=True)
         st.info("📂 Silakan upload dataset (CSV/Excel) pada sidebar **Pengaturan** untuk memulai.")
