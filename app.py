@@ -27,7 +27,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# CUSTOM CSS
+# CUSTOM CSS (Tidak ada perubahan)
 # =========================================================
 st.markdown("""
 <style>
@@ -121,7 +121,7 @@ if mode == "Supervised Learning":
         st.markdown('<div class="section-title">Cuplikan Dataset</div>', unsafe_allow_html=True)
         st.dataframe(df_sup.head(6), use_container_width=True, hide_index=True)
 
-        with st.expander("📊 Lihat Analisis Data Awal (EDA)", expanded=True): # EDA dibiarkan terbuka
+        with st.expander("📊 Lihat Analisis Data Awal (EDA)", expanded=True):
             col_eda1, col_eda2 = st.columns(2)
             with col_eda1:
                 st.write("**Distribusi Kelas Target**")
@@ -200,7 +200,6 @@ if mode == "Supervised Learning":
                 </div>
                 """, unsafe_allow_html=True)
 
-                # --- ANALISIS LANJUTAN DIBUKA OTOMATIS ---
                 with st.expander("📈 Analisis Model Lanjutan (ROC, PR Curve, Classification Report)", expanded=True):
                     col_analisis1, col_analisis2 = st.columns(2)
                     
@@ -225,6 +224,7 @@ if mode == "Supervised Learning":
                             
                     with col_analisis2:
                         st.write("**Classification Report**")
+                        # Perbaikan: Ubah dictionary menjadi DataFrame dengan aman
                         report = classification_report(y_test, y_pred, output_dict=True)
                         report_df = pd.DataFrame(report).transpose()
                         st.dataframe(report_df.style.format("{:.2f}"), use_container_width=True)
@@ -241,7 +241,7 @@ if mode == "Supervised Learning":
                 st.error(f"❌ Terjadi kesalahan: {e}")
 
 # =========================================================
-# UNSUPERVISED LEARNING
+# UNSUPERVISED LEARNING (Tidak ada perubahan)
 # =========================================================
 else:
     with st.sidebar:
@@ -272,7 +272,6 @@ else:
                 
             tombol_cluster = st.button("Mulai Clustering", use_container_width=True)
 
-    # ----- MAIN CONTENT UNSUPERVISED -----
     if unsup_file is None:
         st.markdown('<div class="section-title">Cuplikan Dataset</div>', unsafe_allow_html=True)
         st.info("📂 Silakan upload dataset (CSV/Excel) pada sidebar **Pengaturan** untuk memulai.")
@@ -343,7 +342,6 @@ else:
                         plt.tight_layout()
                         st.pyplot(fig, use_container_width=True)
 
-                    # --- ANALISIS LANJUTAN DIBUKA OTOMATIS ---
                     with st.expander("📊 Analisis Clustering Lanjutan (Distribusi & Elbow Method)", expanded=True):
                         col_u1, col_u2 = st.columns(2)
                         
