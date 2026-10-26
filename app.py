@@ -11,7 +11,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score,
     f1_score, confusion_matrix, silhouette_score,
-    roc_curve, auc
+    roc_curve, auc, precision_recall_curve, classification_report
 )
 from sklearn.cluster import KMeans, DBSCAN
 from imblearn.over_sampling import SMOTE
@@ -59,6 +59,8 @@ div[role="radiogroup"] > label > div:first-child, div[role="radiogroup"] > label
 .metric-value { font-size: 26px; font-weight: 800; color: #2e7d32; margin: 0; line-height: 1; }
 .caption-text { font-size: 12px; color: #9ca3af; margin-top: 12px; font-style: italic; }
 .block-container { padding-top: 2rem !important; padding-bottom: 2rem !important; max-width: 95% !important; }
+/* Kotak Insight */
+.insight-box { background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; border-radius: 4px; margin-top: 15px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -169,11 +171,17 @@ if mode == "Supervised Learning":
                 st.markdown('<div class="section-title">Hasil Evaluasi</div>', unsafe_allow_html=True)
                 avg = "weighted" if len(np.unique(y)) > 2 else "binary"
                 
+                # Perhitungan metrik
+                acc = accuracy_score(y_test, y_pred)
+                prec = precision_score(y_test, y_pred, average=avg, zero_division=0)
+                rec = recall_score(y_test, y_pred, average=avg, zero_division=0)
+                f1 = f1_score(y_test, y_pred, average=avg, zero_division=0)
+
                 c1, c2, c3, c4 = st.columns(4)
-                with c1: metric_box("Accuracy", f"{accuracy_score(y_test, y_pred):.2f}")
-                with c2: metric_box("Precision", f"{precision_score(y_test, y_pred, average=avg, zero_division=0):.2f}")
-                with c3: metric_box("Recall", f"{recall_score(y_test, y_pred, average=avg, zero_division=0):.2f}")
-                with c4: metric_box("F1-Measure", f"{f1_score(y_test, y_pred, average=avg, zero_division=0):.2f}")
+                with c1: metric_box("Accuracy", f"{acc:.2f}")
+                with c2: metric_box("Precision", f"{prec:.2f}")
+                with c3: metric_box("Recall", f"{rec:.2f}")
+                with c4: metric_box("F1-Measure", f"{f1:.2f}")
 
                 st.markdown('<div class="section-title">Confusion Matrix</div>', unsafe_allow_html=True)
                 cm = confusion_matrix(y_test, y_pred)
@@ -186,8 +194,19 @@ if mode == "Supervised Learning":
                 st.pyplot(fig_cm, use_container_width=False)
                 st.markdown('<div class="caption-text">Visualisasi hasil prediksi model</div>', unsafe_allow_html=True)
 
-                with st.expander("📈 Lihat Analisis Model Lanjutan (ROC & Feature Importance)"):
+                # --- KOTAK INTERPRETASI OTOMATIS (SUPERVISED) ---
+                st.markdown(f"""
+                <div class="insight-box">
+                    <b>💡 Interpretasi Hasil:</b><br>
+                    Model memiliki <b>Accuracy sebesar {acc:.2f}</b> dan <b>Recall sebesar {rec:.2f}</b>. 
+                    {"Karena Recall tinggi namun Precision rendah, model ini cenderung 'over-cautious' — berhasil menangkap banyak kasus fraud (True Positive), namun juga banyak salah mencurigai transaksi normal sebagai fraud (False Positive)." if rec > prec else "Model sudah seimbang dalam mendeteksi fraud tanpa terlalu banyak salah tuduh."}
+                </div>
+                """, unsafe_allow_html=True)
+
+                # --- MENU ANALISIS LANJUTAN (SUPERVISED) ---
+                with st.expander("📈 Lihat Analisis Model Lanjutan (ROC, PR Curve, Classification Report)"):
                     col_analisis1, col_analisis2 = st.columns(2)
+                    
                     with col_analisis1:
                         if len(np.unique(y)) == 2:
                             st.write("**ROC Curve & AUC**")
@@ -198,7 +217,21 @@ if mode == "Supervised Learning":
                             ax_roc.plot([0, 1], [0, 1], color="navy", lw=1, linestyle="--")
                             ax_roc.legend(loc="lower right")
                             st.pyplot(fig_roc)
+                            
+                            st.write("**Precision-Recall Curve**")
+                            precision_curve, recall_curve, _ = precision_recall_curve(y_test, y_prob)
+                            fig_pr, ax_pr = plt.subplots(figsize=(4.5, 3))
+                            ax_pr.plot(recall_curve, precision_curve, color="green", lw=2)
+                            ax_pr.set_xlabel("Recall")
+                            ax_pr.set_ylabel("Precision")
+                            st.pyplot(fig_pr)
+                            
                     with col_analisis2:
+                        st.write("**Classification Report**")
+                        report = classification_report(y_test, y_pred, output_dict=True)
+                        report_df = pd.DataFrame(report).transpose()
+                        st.dataframe(report_df.style.format("{:.2f}"), use_container_width=True)
+
                         if algo == "Random Forest":
                             st.write("**Feature Importance (Top 10)**")
                             importances = model.feature_importances_
@@ -211,7 +244,7 @@ if mode == "Supervised Learning":
                 st.error(f"❌ Terjadi kesalahan: {e}")
 
 # =========================================================
-# UNSUPERVISED LEARNING (TAMPILAN 100% MIRIP MOCKUP)
+# UNSUPERVISED LEARNING (TAMPILAN MOCKUP + ANALISIS)
 # =========================================================
 else:
     with st.sidebar:
@@ -259,19 +292,20 @@ else:
                         X = df_unsup[feature_cols].dropna()
                         
                         if algo_u == "DBSCAN" and len(X) > 10000:
-                            st.warning(f"⚠️ Dataset sangat besar ({len(X):,} baris). DBSCAN bisa sangat lambat atau kehabisan memori. Disarankan menggunakan K-Means atau sampel data.")
+                            st.warning(f"⚠️ Dataset sangat besar ({len(X):,} baris). DBSCAN bisa sangat lambat atau kehabisan memori.")
                         
                         X_s = StandardScaler().fit_transform(X)
 
-                        # Proses Model
                         if algo_u == "K-Means":
-                            labels = KMeans(n_clusters=n_clusters, random_state=42, n_init=10).fit_predict(X_s)
+                            model = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+                            labels = model.fit_predict(X_s)
                             n_noise = 0
+                            inertia = model.inertia_
                         else:
                             labels = DBSCAN(eps=eps_val, min_samples=min_samples_val).fit_predict(X_s)
                             n_noise = list(labels).count(-1)
+                            inertia = None
 
-                        # Hitung Metrik (Aman)
                         unique_clusters = set(labels) - {-1}
                         n_unique = len(unique_clusters)
                         sil = None
@@ -280,43 +314,72 @@ else:
                             sil = silhouette_score(X_s[mask_cluster], labels[mask_cluster])
 
                     # Tampilan Layout Mirip Mockup
-                    col_a, col_b = st.columns([1, 2]) # Lebar kiri 1/3, kanan 2/3
+                    col_a, col_b = st.columns([1, 2])
                     
                     with col_a:
                         st.markdown('<div class="section-title">Hasil Clustering</div>', unsafe_allow_html=True)
                         metric_box("Silhouette Score", f"{sil:.2f}" if sil is not None else "N/A")
+                        st.write("")
+                        st.markdown(f"""
+                        <div class="insight-box">
+                            <b>💡 Interpretasi:</b><br>
+                            {"Silhouette Score mendekati 1 menandakan klaster terpisah dengan sangat baik." if sil and sil > 0.5 else "Silhouette Score rendah menandakan antar-klaster saling tumpang tindih."}
+                            {" <br>Terdapat <b>{n_noise} noise</b> (outlier) yang tidak masuk klaster manapun.".format(n_noise=n_noise) if n_noise > 0 else ""}
+                        </div>
+                        """, unsafe_allow_html=True)
 
                     with col_b:
                         st.markdown('<div class="section-title">Scatter Plot</div>', unsafe_allow_html=True)
-                        
-                        # Setup Figure
                         fig, ax = plt.subplots(figsize=(6.5, 4.2))
                         
-                        # 1. Plot semua titik dengan warna BIRU (seperti mockup)
+                        # Plot Biru & Ring Oranye (Mockup Style)
                         ax.scatter(X_s[:, 0], X_s[:, 1], c="#3b78d8", s=55, alpha=1.0, edgecolor="white", linewidth=0.8, zorder=2)
-                        
-                        # 2. Tambahkan efek ring ORANYE (seperti mockup) pada beberapa titik secara acak
                         if len(X_s) >= 5:
                             highlight_idx = np.random.choice(len(X_s), 4, replace=False)
-                            ax.scatter(X_s[highlight_idx, 0], X_s[highlight_idx, 1], 
-                                       facecolors="none", edgecolors="#e8a33d", 
-                                       s=120, linewidth=1.8, zorder=3)
+                            ax.scatter(X_s[highlight_idx, 0], X_s[highlight_idx, 1], facecolors="none", edgecolors="#e8a33d", s=120, linewidth=1.8, zorder=3)
 
-                        # 3. Styling Sumbu & Kotak
                         ax.set_xlabel(feature_cols[0], fontsize=10, color="#666")
                         ax.set_ylabel(feature_cols[1], fontsize=10, color="#666")
-                        
-                        # Hilangkan angka pada sumbu (seperti di gambar)
                         ax.set_xticks([])
                         ax.set_yticks([])
-                        
-                        # Warnai garis pinggir kotak menjadi abu-abu
                         for spine in ax.spines.values(): 
                             spine.set_color("#c8ccd4")
                         ax.grid(False)
-                        
                         plt.tight_layout()
                         st.pyplot(fig, use_container_width=True)
+
+                    # --- MENU ANALISIS LANJUTAN (UNSUPERVISED) ---
+                    with st.expander("📊 Lihat Analisis Clustering Lanjutan (Distribusi & Elbow Method)"):
+                        col_u1, col_u2 = st.columns(2)
+                        
+                        with col_u1:
+                            st.write("**Distribusi Anggota Klaster**")
+                            dist_df = pd.Series(labels).value_counts().reset_index()
+                            dist_df.columns = ["Klaster (ID)", "Jumlah Data"]
+                            
+                            # Ubah label -1 menjadi 'Noise' untuk DBSCAN
+                            if n_noise > 0:
+                                dist_df["Klaster (ID)"] = dist_df["Klaster (ID)"].replace(-1, "Noise (-1)")
+                            
+                            st.dataframe(dist_df, hide_index=True, use_container_width=True)
+                            
+                        with col_u2:
+                            if algo_u == "K-Means":
+                                st.write("**Elbow Method (Mencari K Optimal)**")
+                                inertias = []
+                                K_range = range(1, min(11, len(X_s))) # Maksimal 10
+                                for k in K_range:
+                                    km = KMeans(n_clusters=k, random_state=42, n_init=10)
+                                    km.fit(X_s)
+                                    inertias.append(km.inertia_)
+                                
+                                fig_elbow, ax_elbow = plt.subplots(figsize=(5, 3.5))
+                                ax_elbow.plot(K_range, inertias, marker='o', linestyle='-', color='purple')
+                                ax_elbow.set_xlabel('Jumlah Klaster (K)')
+                                ax_elbow.set_ylabel('Inertia (SSE)')
+                                ax_elbow.set_title('Elbow Method')
+                                st.pyplot(fig_elbow)
+                                st.markdown('<div class="caption-text">Titik "siku" pada grafik menunjukkan K yang paling optimal.</div>', unsafe_allow_html=True)
 
                 except Exception as e:
                     st.error(f"❌ Terjadi kesalahan: {e}")
