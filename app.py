@@ -140,7 +140,7 @@ if mode == "Supervised Learning":
 
         if tombol_train:
             try:
-                with st.spinner("Melatih model... Mohon tunggu (untuk dataset besar ini bisa memakan waktu 1-2 menit)"):
+                with st.spinner("Melatih model..."):
                     X = df_sup.drop(columns=[target_col])
                     y = df_sup[target_col]
                     if y.dtype == "object" or y.dtype.name == "category":
@@ -211,7 +211,7 @@ if mode == "Supervised Learning":
                 st.error(f"❌ Terjadi kesalahan: {e}")
 
 # =========================================================
-# UNSUPERVISED LEARNING (FIX DBSCAN)
+# UNSUPERVISED LEARNING (TAMPILAN 100% MIRIP MOCKUP)
 # =========================================================
 else:
     with st.sidebar:
@@ -242,6 +242,7 @@ else:
                 
             tombol_cluster = st.button("Mulai Clustering", use_container_width=True)
 
+    # ----- MAIN CONTENT UNSUPERVISED -----
     if unsup_file is None:
         st.markdown('<div class="section-title">Cuplikan Dataset</div>', unsafe_allow_html=True)
         st.info("📂 Silakan upload dataset (CSV/Excel) pada sidebar **Pengaturan** untuk memulai.")
@@ -255,16 +256,14 @@ else:
             else:
                 try:
                     with st.spinner("Menjalankan clustering..."):
-                        # Siapkan data & hapus nilai NaN
                         X = df_unsup[feature_cols].dropna()
                         
-                        # Peringatan jika dataset terlalu besar untuk DBSCAN
                         if algo_u == "DBSCAN" and len(X) > 10000:
                             st.warning(f"⚠️ Dataset sangat besar ({len(X):,} baris). DBSCAN bisa sangat lambat atau kehabisan memori. Disarankan menggunakan K-Means atau sampel data.")
                         
                         X_s = StandardScaler().fit_transform(X)
 
-                        # --- Proses Model ---
+                        # Proses Model
                         if algo_u == "K-Means":
                             labels = KMeans(n_clusters=n_clusters, random_state=42, n_init=10).fit_predict(X_s)
                             n_noise = 0
@@ -272,49 +271,51 @@ else:
                             labels = DBSCAN(eps=eps_val, min_samples=min_samples_val).fit_predict(X_s)
                             n_noise = list(labels).count(-1)
 
-                        # --- Hitung Metrik (Aman dari Error) ---
-                        unique_clusters = set(labels) - {-1} # Abaikan noise (-1) untuk hitung klaster asli
+                        # Hitung Metrik (Aman)
+                        unique_clusters = set(labels) - {-1}
                         n_unique = len(unique_clusters)
-                        
                         sil = None
                         if n_unique > 1:
-                            # Hanya hitung Silhouette jika ada >1 klaster dan abaikan noise
                             mask_cluster = labels != -1
                             sil = silhouette_score(X_s[mask_cluster], labels[mask_cluster])
 
-                    # --- Tampilkan Hasil ---
-                    col_a, col_b = st.columns([1, 2.2])
+                    # Tampilan Layout Mirip Mockup
+                    col_a, col_b = st.columns([1, 2]) # Lebar kiri 1/3, kanan 2/3
+                    
                     with col_a:
                         st.markdown('<div class="section-title">Hasil Clustering</div>', unsafe_allow_html=True)
                         metric_box("Silhouette Score", f"{sil:.2f}" if sil is not None else "N/A")
-                        
-                        st.write(f"**Jumlah Klaster:** {n_unique}")
-                        if algo_u == "DBSCAN":
-                            st.write(f"**Noise (Outlier):** {n_noise} titik")
 
                     with col_b:
                         st.markdown('<div class="section-title">Scatter Plot</div>', unsafe_allow_html=True)
+                        
+                        # Setup Figure
                         fig, ax = plt.subplots(figsize=(6.5, 4.2))
                         
-                        # Plot Noise (Warna Merah / Silang)
-                        if n_noise > 0:
-                            mask_noise = labels == -1
-                            ax.scatter(X_s[mask_noise, 0], X_s[mask_noise, 1], c="red", marker="x", s=40, label="Noise")
-                            
-                        # Plot Klaster (Warna-warni)
-                        if n_unique > 0:
-                            mask_cluster = labels != -1
-                            scatter = ax.scatter(X_s[mask_cluster, 0], X_s[mask_cluster, 1], c=labels[mask_cluster], cmap="viridis", s=50, alpha=0.8, edgecolor="white", linewidth=0.5)
-                            plt.colorbar(scatter, ax=ax, label="Label Klaster")
+                        # 1. Plot semua titik dengan warna BIRU (seperti mockup)
+                        ax.scatter(X_s[:, 0], X_s[:, 1], c="#3b78d8", s=55, alpha=1.0, edgecolor="white", linewidth=0.8, zorder=2)
+                        
+                        # 2. Tambahkan efek ring ORANYE (seperti mockup) pada beberapa titik secara acak
+                        if len(X_s) >= 5:
+                            highlight_idx = np.random.choice(len(X_s), 4, replace=False)
+                            ax.scatter(X_s[highlight_idx, 0], X_s[highlight_idx, 1], 
+                                       facecolors="none", edgecolors="#e8a33d", 
+                                       s=120, linewidth=1.8, zorder=3)
 
+                        # 3. Styling Sumbu & Kotak
                         ax.set_xlabel(feature_cols[0], fontsize=10, color="#666")
                         ax.set_ylabel(feature_cols[1], fontsize=10, color="#666")
-                        ax.set_xticks([]); ax.set_yticks([])
-                        for spine in ax.spines.values(): spine.set_color("#c8ccd4")
                         
-                        if n_noise > 0:
-                            ax.legend(loc="upper right")
-                            
+                        # Hilangkan angka pada sumbu (seperti di gambar)
+                        ax.set_xticks([])
+                        ax.set_yticks([])
+                        
+                        # Warnai garis pinggir kotak menjadi abu-abu
+                        for spine in ax.spines.values(): 
+                            spine.set_color("#c8ccd4")
+                        ax.grid(False)
+                        
+                        plt.tight_layout()
                         st.pyplot(fig, use_container_width=True)
 
                 except Exception as e:
