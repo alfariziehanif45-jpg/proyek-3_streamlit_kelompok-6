@@ -59,7 +59,6 @@ div[role="radiogroup"] > label > div:first-child, div[role="radiogroup"] > label
 .metric-value { font-size: 26px; font-weight: 800; color: #2e7d32; margin: 0; line-height: 1; }
 .caption-text { font-size: 12px; color: #9ca3af; margin-top: 12px; font-style: italic; }
 .block-container { padding-top: 2rem !important; padding-bottom: 2rem !important; max-width: 95% !important; }
-/* Kotak Insight */
 .insight-box { background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; border-radius: 4px; margin-top: 15px; }
 </style>
 """, unsafe_allow_html=True)
@@ -122,7 +121,7 @@ if mode == "Supervised Learning":
         st.markdown('<div class="section-title">Cuplikan Dataset</div>', unsafe_allow_html=True)
         st.dataframe(df_sup.head(6), use_container_width=True, hide_index=True)
 
-        with st.expander("📊 Lihat Analisis Data Awal (EDA)"):
+        with st.expander("📊 Lihat Analisis Data Awal (EDA)", expanded=True): # EDA dibiarkan terbuka
             col_eda1, col_eda2 = st.columns(2)
             with col_eda1:
                 st.write("**Distribusi Kelas Target**")
@@ -171,7 +170,6 @@ if mode == "Supervised Learning":
                 st.markdown('<div class="section-title">Hasil Evaluasi</div>', unsafe_allow_html=True)
                 avg = "weighted" if len(np.unique(y)) > 2 else "binary"
                 
-                # Perhitungan metrik
                 acc = accuracy_score(y_test, y_pred)
                 prec = precision_score(y_test, y_pred, average=avg, zero_division=0)
                 rec = recall_score(y_test, y_pred, average=avg, zero_division=0)
@@ -194,7 +192,6 @@ if mode == "Supervised Learning":
                 st.pyplot(fig_cm, use_container_width=False)
                 st.markdown('<div class="caption-text">Visualisasi hasil prediksi model</div>', unsafe_allow_html=True)
 
-                # --- KOTAK INTERPRETASI OTOMATIS (SUPERVISED) ---
                 st.markdown(f"""
                 <div class="insight-box">
                     <b>💡 Interpretasi Hasil:</b><br>
@@ -203,8 +200,8 @@ if mode == "Supervised Learning":
                 </div>
                 """, unsafe_allow_html=True)
 
-                # --- MENU ANALISIS LANJUTAN (SUPERVISED) ---
-                with st.expander("📈 Lihat Analisis Model Lanjutan (ROC, PR Curve, Classification Report)"):
+                # --- ANALISIS LANJUTAN DIBUKA OTOMATIS ---
+                with st.expander("📈 Analisis Model Lanjutan (ROC, PR Curve, Classification Report)", expanded=True):
                     col_analisis1, col_analisis2 = st.columns(2)
                     
                     with col_analisis1:
@@ -244,7 +241,7 @@ if mode == "Supervised Learning":
                 st.error(f"❌ Terjadi kesalahan: {e}")
 
 # =========================================================
-# UNSUPERVISED LEARNING (TAMPILAN MOCKUP + ANALISIS)
+# UNSUPERVISED LEARNING
 # =========================================================
 else:
     with st.sidebar:
@@ -313,7 +310,6 @@ else:
                             mask_cluster = labels != -1
                             sil = silhouette_score(X_s[mask_cluster], labels[mask_cluster])
 
-                    # Tampilan Layout Mirip Mockup
                     col_a, col_b = st.columns([1, 2])
                     
                     with col_a:
@@ -332,7 +328,6 @@ else:
                         st.markdown('<div class="section-title">Scatter Plot</div>', unsafe_allow_html=True)
                         fig, ax = plt.subplots(figsize=(6.5, 4.2))
                         
-                        # Plot Biru & Ring Oranye (Mockup Style)
                         ax.scatter(X_s[:, 0], X_s[:, 1], c="#3b78d8", s=55, alpha=1.0, edgecolor="white", linewidth=0.8, zorder=2)
                         if len(X_s) >= 5:
                             highlight_idx = np.random.choice(len(X_s), 4, replace=False)
@@ -348,8 +343,8 @@ else:
                         plt.tight_layout()
                         st.pyplot(fig, use_container_width=True)
 
-                    # --- MENU ANALISIS LANJUTAN (UNSUPERVISED) ---
-                    with st.expander("📊 Lihat Analisis Clustering Lanjutan (Distribusi & Elbow Method)"):
+                    # --- ANALISIS LANJUTAN DIBUKA OTOMATIS ---
+                    with st.expander("📊 Analisis Clustering Lanjutan (Distribusi & Elbow Method)", expanded=True):
                         col_u1, col_u2 = st.columns(2)
                         
                         with col_u1:
@@ -357,7 +352,6 @@ else:
                             dist_df = pd.Series(labels).value_counts().reset_index()
                             dist_df.columns = ["Klaster (ID)", "Jumlah Data"]
                             
-                            # Ubah label -1 menjadi 'Noise' untuk DBSCAN
                             if n_noise > 0:
                                 dist_df["Klaster (ID)"] = dist_df["Klaster (ID)"].replace(-1, "Noise (-1)")
                             
@@ -367,7 +361,7 @@ else:
                             if algo_u == "K-Means":
                                 st.write("**Elbow Method (Mencari K Optimal)**")
                                 inertias = []
-                                K_range = range(1, min(11, len(X_s))) # Maksimal 10
+                                K_range = range(1, min(11, len(X_s)))
                                 for k in K_range:
                                     km = KMeans(n_clusters=k, random_state=42, n_init=10)
                                     km.fit(X_s)
